@@ -33,7 +33,7 @@ function renderTodoList() {
   for (var i = 0; i < data.length; i++) {
     var value = data[i].todo;
     var completed = data[i].completed;
-    (completed==false) ? addToDOM(value) : addToDOM(value,true);
+    (completed==false) ? addToDOM(text=value,itemid=i) : addToDOM(text=value,itemid=i,completed=true);
   }
 }
 
@@ -50,10 +50,12 @@ function addItem(value) {
     completed: false
   }
 
-  addToDOM(value);
   document.getElementById('item').value = '';
 
   data.push(obj);
+
+  addToDOM(value,data.indexOf(obj));
+
   UpdateLS();
 }
 
@@ -73,15 +75,8 @@ function completeItem() {
   var parent = item.parentNode;
   var id = parent.id;
   var value = item.innerText;
-  console.log(data.indexOf(this).completed);
-  // if (id === 'todo' ) {
-  //   data.todo.splice(data.todo.indexOf(value), 1);
-  //   data.completed.push(value);
-  // } else {
-  //   data.completed.splice(data.indexOf(this), 1);
-  //   data.todo.push(value);
-  // }
-
+  var x = document.getElementById("item-id").value;
+  data[x].completed = (data[x].complete == "false") ? "true" : "false";
   UpdateLS();
 
   var target = (id === 'todo') ? document.getElementById('completed') : document.getElementById('todo');
@@ -91,7 +86,7 @@ function completeItem() {
 }
 
 
-function addToDOM(text, completed) {
+function addToDOM(text, itemid, completed) {
   var list = (completed) ? document.getElementById('completed') : document.getElementById('todo');
 
   var item = document.createElement('li');
@@ -110,8 +105,15 @@ function addToDOM(text, completed) {
   complete.innerHTML = completeSVG;
   complete.addEventListener('click', completeItem);
 
+  var input = document.createElement("input");
+  input.setAttribute("type", "hidden");
+  input.setAttribute("id", "item-id");
+  input.setAttribute("value", String(itemid));
+
+  
   buttons.appendChild(remove);
   buttons.appendChild(complete);
+  item.appendChild(input);
   item.appendChild(buttons);
 
   list.insertBefore(item, list.childNodes[0]);
